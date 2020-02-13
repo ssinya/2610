@@ -1,0 +1,384 @@
+/*
+ * Clone Lab - part1.c
+ * 
+ * Ecole polytechnique de Montreal, 2018
+ */
+
+// TODO
+// Si besoin, ajouter ici les directives d'inclusion
+// -------------------------------------------------
+#include <stdio.h>
+#include <stddef.h>
+#include <stdarg.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <unistd.h>
+// -------------------------------------------------
+
+void part1() {
+    // TODO
+    
+    pid_t papa = getpid(); //pid pour notre pid et ppid pour le pid du daron mais pas de daron pour le "main"
+
+    char buffer[13]; //un tableau de 13 case de char
+    sprintf(buffer,"%d",papa); //
+
+    pid_t fils = fork();
+    if(fils == 0){
+    execl("./part1/francis","francis","-P",buffer,NULL);       
+    }
+    char buffer2[13]; 
+    sprintf(buffer2,"%d",fils);
+    execl("./part1/gale","gale","-P",buffer2,NULL);
+ 
+}
+
+
+---------------------------------------
+
+/*
+ * Clone Lab - part2.c
+ *
+ * Ecole polytechnique de Montreal, 2018
+ */
+
+#include "libclonelab.h"
+
+#include <stdio.h>
+
+// TODO
+// Si besoin, ajouter ici les directives d'inclusion
+// -------------------------------------------------
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+// -------------------------------------------------
+
+#define PART2_OUTPUT_FILE_PATH "part2Output.txt"
+// void registerProc(int procLevel, int procNum, getpid(), getppid());
+
+void part2() {
+  // Ouverture du fichier de sortie pour la question 2.3
+  FILE *part2OutputFile = fopen(PART2_OUTPUT_FILE_PATH, "a");
+  // TODO
+
+  //level0, level1.3, level1.4, , level2.2, level2.3
+
+  pid_t daron = getpid();
+  char temp[13];
+  sprintf(temp, "%d", daron);
+  fprintf(part2OutputFile,"Root process has pid %d ",daron);
+  if (fork() == 0) { // 1.1
+    registerProc(1, 1, getpid(), getppid());
+    if (fork() == 0) { // 2.1
+      registerProc(2, 1, getpid(), getppid()); 
+      fprintf(part2OutputFile,"(message from process level2.1)\n");
+      fclose(part2OutputFile);execl("./part2/level2.1","level2.1",NULL);
+    } else if (fork() == 0) { // 2.2
+      registerProc(2, 2, getpid(), getppid());
+      fprintf(part2OutputFile,"(message from process level2.2)\n");
+      fclose(part2OutputFile);
+      execl("./part2/level2.2","level2.2",NULL);
+    }
+    while(wait(NULL)>0);
+    execl("./part2/level1.1","level1.1",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.2
+   // registerProc(1, 2, getpid(), getppid());
+    if (fork() == 0) { // 2.3
+      registerProc(2, 3, getpid(), getppid());     
+      fprintf(part2OutputFile,"(message from process level2.3)\n");
+    fclose(part2OutputFile);execl("./part2/level2.3","level2.3",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);
+    registerProc(1, 2, getpid(), getppid());
+    execl("./part2/level1.2","level1.2",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.3
+    registerProc(1, 3, getpid(), getppid());
+    if (fork() == 0) { // 2.4
+      registerProc(2, 4, getpid(), getppid());
+      execl("./part2/level2.4","level2.4",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);  
+    fprintf(part2OutputFile,"(message from process level1.3)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level1.3","level1.3",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.4
+    registerProc(1, 4, getpid(), getppid());
+    if (fork() == 0) { // 2.5
+      registerProc(2, 5, getpid(), getppid());
+      execl("./part2/level2.5","level2.5",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);
+    fprintf(part2OutputFile,"(message from process level1.4)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level1.4","level1.4",temp,NULL);
+  }
+  while(wait(NULL)>0);
+  fprintf(part2OutputFile,"(message from process level0)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level0","level0", "06cf56ff689e720b5a351b9e",NULL);
+    //le jeton on a du executer pour les avoir
+  
+   
+}
+
+
+-----------------------
+BONUS
+
+/*
+ * Clone Lab - part2.c
+ *
+ * Ecole polytechnique de Montreal, 2018
+ */
+
+#include "libclonelab.h"
+
+#include <stdio.h>
+
+// TODO
+// Si besoin, ajouter ici les directives d'inclusion
+// -------------------------------------------------
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+// -------------------------------------------------
+
+#define PART2_OUTPUT_FILE_PATH "part2Output.txt"
+// void registerProc(int procLevel, int procNum, getpid(), getppid());
+
+void part2() {
+  // Ouverture du fichier de sortie pour la question 2.3
+  FILE *part2OutputFile = fopen(PART2_OUTPUT_FILE_PATH, "a");
+  // TODO
+
+  //level0, level1.3, level1.4, , level2.2, level2.3
+
+  pid_t daron = getpid();
+  char temp[13];
+  sprintf(temp, "%d", daron);
+  fprintf(part2OutputFile,"Root process has pid %d ",daron);
+  if (fork() == 0) { // 1.1
+    registerProc(1, 1, getpid(), getppid());
+    if (fork() == 0) { // 2.1
+      registerProc(2, 1, getpid(), getppid()); 
+      fprintf(part2OutputFile,"(message from process level2.1)\n");
+      fclose(part2OutputFile);execl("./part2/level2.1","level2.1",NULL);
+    } else if (fork() == 0) { // 2.2
+      registerProc(2, 2, getpid(), getppid());
+      fprintf(part2OutputFile,"(message from process level2.2)\n");
+      fclose(part2OutputFile);
+      execl("./part2/level2.2","level2.2",NULL);
+    }
+    while(wait(NULL)>0);
+    execl("./part2/level1.1","level1.1",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.2
+   // registerProc(1, 2, getpid(), getppid());
+    if (fork() == 0) { // 2.3
+      registerProc(2, 3, getpid(), getppid());     
+      fprintf(part2OutputFile,"(message from process level2.3)\n");
+    fclose(part2OutputFile);execl("./part2/level2.3","level2.3",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);
+    registerProc(1, 2, getpid(), getppid());
+    execl("./part2/level1.2","level1.2",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.3
+    registerProc(1, 3, getpid(), getppid());
+    if (fork() == 0) { // 2.4
+      registerProc(2, 4, getpid(), getppid());
+      execl("./part2/level2.4","level2.4",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);  
+    fprintf(part2OutputFile,"(message from process level1.3)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level1.3","level1.3",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.4
+    registerProc(1, 4, getpid(), getppid());
+    if (fork() == 0) { // 2.5
+      registerProc(2, 5, getpid(), getppid());
+      execl("./part2/level2.5","level2.5",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);
+    fprintf(part2OutputFile,"(message from process level1.4)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level1.4","level1.4",temp,NULL);
+  }
+  while(wait(NULL)>0);
+  fprintf(part2OutputFile,"(message from process level0)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level0","level0", "06cf56ff689e720b5a351b9e",NULL);
+  
+   
+}
+
+-------------
+BONUS 2
+/*
+ * Clone Lab - part2.c
+ *
+ * Ecole polytechnique de Montreal, 2018
+ */
+
+#include "libclonelab.h"
+
+#include <stdio.h>
+
+// TODO
+// Si besoin, ajouter ici les directives d'inclusion
+// -------------------------------------------------
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+// -------------------------------------------------
+
+#define PART2_OUTPUT_FILE_PATH "part2Output.txt"
+// void registerProc(int procLevel, int procNum, getpid(), getppid());
+
+void part2() {
+  // Ouverture du fichier de sortie pour la question 2.3
+  FILE *part2OutputFile = fopen(PART2_OUTPUT_FILE_PATH, "a");
+  // TODO
+
+  //level0, level1.3, level1.4, , level2.2, level2.3
+
+  pid_t daron = getpid();
+  char temp[13];
+  sprintf(temp, "%d", daron);
+  fprintf(part2OutputFile,"Root process has pid %d ",daron);
+  if (fork() == 0) { // 1.1
+    registerProc(1, 1, getpid(), getppid());
+    if (fork() == 0) { // 2.1
+      registerProc(2, 1, getpid(), getppid()); 
+      fprintf(part2OutputFile,"(message from process level2.1)\n");
+      fclose(part2OutputFile);execl("./part2/level2.1","level2.1",NULL);
+    } else if (fork() == 0) { // 2.2
+      registerProc(2, 2, getpid(), getppid());
+      fprintf(part2OutputFile,"(message from process level2.2)\n");
+      fclose(part2OutputFile);
+      execl("./part2/level2.2","level2.2",NULL);
+    }
+    while(wait(NULL)>0);
+    execl("./part2/level1.1","level1.1",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.2
+   // registerProc(1, 2, getpid(), getppid());
+    if (fork() == 0) { // 2.3
+      registerProc(2, 3, getpid(), getppid());     
+      fprintf(part2OutputFile,"(message from process level2.3)\n");
+    fclose(part2OutputFile);execl("./part2/level2.3","level2.3",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);
+    registerProc(1, 2, getpid(), getppid());
+    execl("./part2/level1.2","level1.2",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.3
+    registerProc(1, 3, getpid(), getppid());
+    if (fork() == 0) { // 2.4
+      registerProc(2, 4, getpid(), getppid());
+      execl("./part2/level2.4","level2.4",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);  
+    fprintf(part2OutputFile,"(message from process level1.3)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level1.3","level1.3",temp,NULL);
+  } 
+  else if (fork() == 0) { // 1.4
+    registerProc(1, 4, getpid(), getppid());
+    if (fork() == 0) { // 2.5
+      registerProc(2, 5, getpid(), getppid());
+      execl("./part2/level2.5","level2.5",NULL);
+    }
+    while(wait(NULL)>0);
+    //wait(NULL);
+    fprintf(part2OutputFile,"(message from process level1.4)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level1.4","level1.4",temp,NULL);
+  }
+  while(wait(NULL)>0);
+  fprintf(part2OutputFile,"(message from process level0)\n");
+    fclose(part2OutputFile);
+    execl("./part2/level0","level0", "06cf56ff689e720b5a351b9e",NULL);
+  
+   
+}
+
+-------------
+BONUS DE BONUS 
+
+/*
+ * Init Lab - q4.c
+ * 
+ * Ecole polytechnique de Montreal, 2018
+ */
+
+#include <stdint.h>
+#include "q4/libq4.h"
+#define equa 90*x*x+61*x+9534;
+
+// TODO
+// Si besoin, ajouter ici les directives d'inclusion
+// -------------------------------------------------
+#include <stdlib.h>
+// ------------------------------------------------- 90 ∗ x 2 + 61 ∗ x + 9534
+
+uint64_t question4A(uint64_t x) {
+    // TODO
+    return 90 * x * x + 61 * x + 9534;
+}
+
+void question4B(uint64_t x, uint64_t *result) {
+    // TODO
+    *result= 90 * x * x + 61 * x + 9534;
+
+}
+
+uint64_t *question4C(uint64_t x) {
+    // TODO
+    //malloc pour allouer en lui donnant la taillle de l'objet
+    uint64_t *ptr = malloc(sizeof(uint64_t));
+    *ptr = 90 * x * x + 61 * x + 9534;
+    return ptr;
+}
+
+void question4D(uint64_t x, uint64_t **resultPtr) {
+    // TODO
+   uint64_t *ptr = malloc(sizeof(uint64_t));
+   *ptr = equa;
+   *resultPtr = ptr;
+}
+
+/*
+ * Attention: Vous devez impérativement obtenir le résultat du calcul de
+ * l’expression demandée par un appel à la fonction _question4B (et non
+ * question4B!) définie dans le fichier q4/libq4.h, que nous avons programmée
+ * et qui a la même signature que votre fonction question4B.
+ */
+uint64_t question4E(uint64_t x) {
+    // TODO
+    uint64_t *ptr = malloc(sizeof(uint64_t));
+    _question4B(x,ptr);
+    return *ptr;
+}
